@@ -2,58 +2,53 @@
 <html lang="en">
 
 <head>
-    <title>@yield('title','Admin')</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title','Admin Dashboard')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <link href="{{asset('style.css')}}" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    @include('admin.layout.styles')
 </head>
 
 <body>
-    <!-- Header -->
-    <header class="container-fluid p-3 bg-primary text-white text-center">
-        <div class="row align-items-center">
-            <div class="col-md-1 text-left">
-                <!-- Nút để mở navbar -->
-                <button class="btn btn-light" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </div>
-            <div class="col-md-9 text-left">
-                <h3>ADMIN DASHBOARD</h3>
-            </div>
-            <div class="col-md-2 text-right">
-                <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">Tài khoản</button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Chỉnh sửa thông tin</a></li>
-                    <li><a class="dropdown-item" href="#" onclick="logout()">Đăng xuất</a></li>
-                </ul>
-            </div>
+    <!-- Sidebar -->
+    <div id="sidebar" class="bg-dark position-fixed h-100" style="width: 250px;">
+        <div class="text-white p-3">
+            <h3>AdminLTE</h3>
         </div>
-    </header>
+        @include('admin.layout.navbar')
+    </div>
+    <!-- Main Content -->
+    <div id="main-content" class="transition">
+        <nav class="navbar navbar-light bg-dark px-3">
+            <button class="btn btn-dark" id="toggleSidebar"><i class="fas fa-bars"></i></button>
+            <a href="#" class="text-white me-3 nav-link">Home</a>
+            <div class="ms-auto">
+                <div class="dropdown d-inline">
+                    <button class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        Account
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <li><a class="dropdown-item" href="#">Change Password</a></li>
+                        <li><a class="dropdown-item" href="#">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
 
-    <!-- Offcanvas Sidebar (Navbar) -->
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Quản lí</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            <!-- Navbar được include ở đây -->
-            @include('admin.layout.navbar')
+        <div class="container mt-5">
+            @yield('content')
         </div>
     </div>
 
-    <!-- Main content -->
-    <div class="container-fluid mt-4">
-        <div class="row">
-            <div class="col-md-12">
-                @yield('content')
-            </div>
-        </div>
-    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('toggleSidebar').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('hide');
+            document.getElementById('main-content').classList.toggle('expanded');
+        });
+    </script>
 </body>
 
 </html>

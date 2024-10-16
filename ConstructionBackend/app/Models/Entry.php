@@ -9,7 +9,13 @@ class Entry extends Model
 {
     use HasFactory;
     protected $primaryKey = 'entry_id';
-
+    protected $fillable = [
+        'project_id',
+        'user_id',
+        'date',
+        'hour',
+        'note',
+    ];
     public function project()
     {
         return $this->belongsTo(Project::class, 'project_id');

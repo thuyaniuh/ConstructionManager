@@ -9,7 +9,15 @@ class Purchase extends Model
 {
     use HasFactory;
     protected $primaryKey = 'purchase_id';
-
+    protected $fillable = [
+        'project_id',
+        'material_id',
+        'supplier_id',
+        'price',
+        'quantity',
+        'date',
+        'user_id',
+    ];
     public function project()
     {
         return $this->belongsTo(Project::class, 'project_id');

@@ -16,8 +16,15 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/', function () {
     return view('welcome');
 });
-
-Auth::routes();
-Route::get('/admin/index', function () {
+Route::get('material', function () {
+    return view('admin.material.list');
+})->name('admin.material.list');
+Route::get('supplier', function () {
+    return view('admin.supplier.list');
+})->name('admin.supplier.list');
+Route::get('user', function () {
+    return view('admin.user.list');
+})->name('admin.user.list');
+Route::get('admin', function () {
     return view('admin.index');
 })->name('admin.index');

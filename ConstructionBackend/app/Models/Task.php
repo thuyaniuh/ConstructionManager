@@ -9,7 +9,14 @@ class Task extends Model
 {
     use HasFactory;
     protected $primaryKey = 'task_id';
-
+    protected $fillable = [
+        'name',
+        'project_id',
+        'user_id',
+        'start_day',
+        'end_day',
+        'status',
+    ];
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

@@ -1,6 +1,12 @@
 @extends('admin.layout.master')
 @section('title','Danh sách vật tư')
 @section('content')
+
+<!-- Vùng hiển thị thông báo thành công -->
+<div id="alertSuccess" class="alert alert-success d-none" role="alert">
+    <strong>Thành công!</strong> Vật tư đã được xử lý thành công.
+</div>
+
 <h2>Thông tin vật tư</h2>
 
 <!-- Nút mở modal thêm vật tư -->
@@ -61,33 +67,38 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // Gọi API để lấy dữ liệu vật tư và hiển thị lên bảng
-    axios.get('http://127.0.0.1:8000/api/materials/')
-        .then(function(response) {
-            let materials = response.data;
-            let tableBody = document.getElementById('materials-body');
+    const API_BASE_URL = 'http://127.0.0.1:8000/api/materials';
 
-            materials.forEach(material => {
-                let row = `<tr>
-                                <td>${material.material_id}</td>
-                                <td>${material.material_name}</td>
-                                <td>${parseFloat(material.price).toLocaleString()}</td>
-                                <td>${material.unit}</td>
-                                <td>
-                                    <button class="btn btn-warning btn-sm" onclick="editMaterial(${material.id})">
-                                        <i class="fas fa-edit"></i> Sửa
-                                    </button>
-                                    <button class="btn btn-danger btn-sm" onclick="deleteMaterial(${material.id})">
-                                        <i class="fas fa-trash"></i> Xóa
-                                    </button>
-                                </td>
-                            </tr>`;
-                tableBody.innerHTML += row;
+    // Gọi API để lấy dữ liệu vật tư và hiển thị lên bảng
+    function loadMaterials() {
+        axios.get(API_BASE_URL)
+            .then(function(response) {
+                let materials = response.data;
+                let tableBody = document.getElementById('materials-body');
+                tableBody.innerHTML = '';
+
+                materials.forEach(material => {
+                    let row = `<tr>
+                                    <td>${material.material_id}</td>
+                                    <td>${material.material_name}</td>
+                                    <td>${parseFloat(material.price).toLocaleString()}</td>
+                                    <td>${material.unit}</td>
+                                    <td>
+                                        <button class="btn btn-warning btn-sm" onclick="editMaterial(${material.material_id})">
+                                            <i class="fas fa-edit"></i> Sửa
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" onclick="deleteMaterial(${material.material_id})">
+                                            <i class="fas fa-trash"></i> Xóa
+                                        </button>
+                                    </td>
+                                </tr>`;
+                    tableBody.innerHTML += row;
+                });
+            })
+            .catch(function(error) {
+                console.error('Có lỗi khi lấy dữ liệu: ', error);
             });
-        })
-        .catch(function(error) {
-            console.error('Có lỗi khi lấy dữ liệu: ', error);
-        });
+    }
 
     // Hiển thị modal thêm vật tư
     function showCreateMaterialModal() {
@@ -97,21 +108,32 @@
         myModal.show();
     }
 
+    // Hàm hiển thị thông báo thành công
+    function showSuccessAlert() {
+        const alertDiv = document.getElementById('alertSuccess');
+        alertDiv.classList.remove('d-none');
+        setTimeout(function() {
+            alertDiv.classList.add('d-none');
+        }, 3000); // Ẩn sau 3 giây
+    }
+
     // Hàm lưu vật tư (dùng cho cả thêm mới và sửa)
     function saveMaterial() {
         let materialId = document.getElementById('materialId').value; // Lấy ID vật tư (nếu có)
         let data = {
-            name: document.getElementById('materialName').value,
-            reference_price: document.getElementById('materialPrice').value,
+            material_name: document.getElementById('materialName').value,
+            price: document.getElementById('materialPrice').value,
             unit: document.getElementById('materialUnit').value
         };
 
         if (materialId) {
             // Nếu có ID thì gọi API cập nhật (PUT)
-            axios.put(`http://127.0.0.1:8000/api/materials/update/${materialId}`, data)
+            axios.put(`${API_BASE_URL}/update/${materialId}`, data)
                 .then(function(response) {
-                    alert('Vật tư đã được cập nhật thành công!');
-                    location.reload(); // Tải lại trang sau khi cập nhật thành công
+                    showSuccessAlert(); // Hiển thị thông báo thành công
+                    loadMaterials(); // Tải lại dữ liệu sau khi cập nhật thành công
+                    var myModal = bootstrap.Modal.getInstance(document.getElementById('materialModal'));
+                    myModal.hide(); // Đóng modal sau khi lưu
                 })
                 .catch(function(error) {
                     console.error('Có lỗi khi cập nhật vật tư: ', error);
@@ -119,10 +141,12 @@
                 });
         } else {
             // Nếu không có ID thì gọi API tạo mới (POST)
-            axios.post('http://127.0.0.1:8000/api/materials/store', data)
+            axios.post(`${API_BASE_URL}/store`, data)
                 .then(function(response) {
-                    alert('Vật tư đã được thêm thành công!');
-                    location.reload(); // Tải lại trang sau khi tạo thành công
+                    showSuccessAlert(); // Hiển thị thông báo thành công
+                    loadMaterials(); // Tải lại dữ liệu sau khi thêm thành công
+                    var myModal = bootstrap.Modal.getInstance(document.getElementById('materialModal'));
+                    myModal.hide(); // Đóng modal sau khi lưu
                 })
                 .catch(function(error) {
                     console.error('Có lỗi khi thêm vật tư: ', error);
@@ -133,12 +157,12 @@
 
     // Hàm chỉnh sửa vật tư (lấy dữ liệu từ API và hiển thị trong modal)
     function editMaterial(id) {
-        axios.get(`http://localhost:8080/BuildMaster/BuildMaster/api/materials/${id}`)
+        axios.get(`${API_BASE_URL}/${id}`)
             .then(function(response) {
                 let material = response.data;
-                document.getElementById('materialId').value = material.id;
-                document.getElementById('materialName').value = material.name;
-                document.getElementById('materialPrice').value = material.reference_price;
+                document.getElementById('materialId').value = material.material_id;
+                document.getElementById('materialName').value = material.material_name;
+                document.getElementById('materialPrice').value = material.price;
                 document.getElementById('materialUnit').value = material.unit;
 
                 var myModal = new bootstrap.Modal(document.getElementById('materialModal'));
@@ -153,10 +177,10 @@
     // Hàm xóa vật tư
     function deleteMaterial(id) {
         if (confirm('Bạn có chắc chắn muốn xóa vật tư này?')) {
-            axios.delete(`http://localhost:8080/BuildMaster/BuildMaster/api/materials/delete/${id}`)
+            axios.delete(`${API_BASE_URL}/${id}`)
                 .then(function(response) {
-                    alert('Vật tư đã được xóa thành công!');
-                    location.reload(); // Tải lại trang sau khi xóa thành công
+                    showSuccessAlert(); // Hiển thị thông báo thành công
+                    loadMaterials(); // Tải lại dữ liệu sau khi xóa thành công
                 })
                 .catch(function(error) {
                     console.error('Có lỗi khi xóa vật tư: ', error);
@@ -164,5 +188,10 @@
                 });
         }
     }
+
+    // Load danh sách vật tư khi trang được tải
+    window.onload = function() {
+        loadMaterials();
+    };
 </script>
 @endsection

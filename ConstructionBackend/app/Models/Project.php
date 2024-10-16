@@ -9,7 +9,13 @@ class Project extends Model
 {
     use HasFactory;
     protected $primaryKey = 'project_id';
-
+    protected $fillable = [
+        'type',
+        'description',
+        'start_day',
+        'end_day',
+        'status',
+    ];
     public function tasks()
     {
         return $this->hasMany(Task::class, 'project_id');

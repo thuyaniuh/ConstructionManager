@@ -22,10 +22,14 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
+        'birth',
+        'role',
         'active_status',
-        'avatar', // Thêm trường avatar
+        'avatar',
     ];
+
     /**
      * The attributes that should be hidden for serialization.
      *
