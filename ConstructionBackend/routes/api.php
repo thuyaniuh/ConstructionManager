@@ -2,14 +2,15 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TaskController;
-use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\PurchaseController;
-use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\SalaryController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\SupplierController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -24,6 +25,18 @@ use App\Http\Controllers\SalaryController;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+
+// Route::group(['prefix' => '/admin'], function () {
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/refresh', [AuthController::class, 'refresh']);
+    Route::get('/user-profile', [AuthController::class, 'userProfile']);
+    Route::post('/user-data', [AuthController::class, 'show']);
+    Route::post('/change-pass', [AuthController::class, 'changePassWord']);
+// });
+
+
 Route::get('/users', [UserController::class, 'index']);
 Route::post('/users', [UserController::class, 'store']);
 Route::get('/users/{id}', [UserController::class, 'show']);
