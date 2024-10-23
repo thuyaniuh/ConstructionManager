@@ -8,6 +8,11 @@
     <i class="fa-solid fa-plus" style="color: #ffffff;"></i> Thêm người dùng
 </button>
 
+<div id="alertSuccess" class="alert alert-success d-none" role="alert">
+    <strong>Thành công!</strong> Người dùng đã được xử lý thành công.
+</div>
+
+
 <!-- Modal để thêm và sửa người dùng -->
 <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -202,7 +207,14 @@
                 });
         }
     }
-
+    // Hàm hiển thị thông báo thành công
+    function showSuccessAlert() {
+        const alertDiv = document.getElementById('alertSuccess');
+        alertDiv.classList.remove('d-none');
+        setTimeout(function() {
+            alertDiv.classList.add('d-none');
+        }, 3000); // Ẩn sau 3 giây
+    }
     // Hàm hiển thị thông báo thành công hoặc lỗi
     function showAlert(message, type) {
         let alertBox = document.createElement('div');

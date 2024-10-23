@@ -120,4 +120,9 @@ class UserController extends Controller
 
         return response()->json(null, 204);
     }
+    public function countUser()
+    {
+        $count = User::count();
+        return response()->json(['count' => $count], 200); // Trả về status code 200 và dữ liệu
+    }
 }

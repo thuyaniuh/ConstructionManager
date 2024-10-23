@@ -25,6 +25,15 @@ Route::get('supplier', function () {
 Route::get('user', function () {
     return view('admin.user.list');
 })->name('admin.user.list');
+Route::get('project', function () {
+    return view('admin.project.list');
+})->name('admin.project.list');
+Route::get('project/{id}', function () {
+    return view('admin.project.detail');
+})->name('admin.project.detail');
 Route::get('admin', function () {
     return view('admin.index');
 })->name('admin.index');
+Route::get('entry', function () {
+    return view('admin.entry.list');
+})->name('admin.entry.list');

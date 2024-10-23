@@ -32,9 +32,10 @@
     }
 
     .small-box .icon {
+        color: rgba(255, 255, 255, 0.8);
         position: absolute;
         top: 10px;
-        right: 10px;
+        right: 30px;
         font-size: 60px;
     }
 

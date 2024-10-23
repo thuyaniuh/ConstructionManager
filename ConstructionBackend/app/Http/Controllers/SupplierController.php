@@ -54,4 +54,9 @@ class SupplierController extends Controller
 
         return response()->json(null, 204);
     }
+    public function countSupplier()
+    {
+        $count = Supplier::count();
+        return response()->json(['count' => $count], 200);
+    }
 }

@@ -4,8 +4,10 @@
     <div class="col-lg-3 col-6">
         <div class="small-box bg-info">
             <div class="inner">
-                <h3>150</h3>
-                <p>New Orders</p>
+                <h3 id="count-project">
+                    <div class="spinner-border text-light"></div>
+                </h3>
+                <p>Project</p>
             </div>
             <div class="icon">
                 <i class="fas fa-shopping-cart"></i>
@@ -28,8 +30,10 @@
     <div class="col-lg-3 col-6">
         <div class="small-box bg-warning">
             <div class="inner">
-                <h3>44</h3>
-                <p>User Registrations</p>
+                <h3 id="count-user">
+                    <div class="spinner-border text-light"></div>
+                </h3>
+                <p>User</p>
             </div>
             <div class="icon">
                 <i class="fas fa-user-plus"></i>
@@ -40,8 +44,10 @@
     <div class="col-lg-3 col-6">
         <div class="small-box bg-danger">
             <div class="inner">
-                <h3>65</h3>
-                <p>Unique Visitors</p>
+                <h3 id='count-supplier'>
+                    <div class="spinner-border text-light"></div>
+                </h3>
+                <p>Supplier</p>
             </div>
             <div class="icon">
                 <i class="fas fa-chart-pie"></i>
@@ -50,4 +56,39 @@
         </div>
     </div>
 </div>
+
+<!-- Thêm thư viện Axios -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    // Hàm để gọi API và cập nhật số lượng người dùng
+    var URL = 'http://127.0.0.1:8000/api'
+
+    function loadAllData() {
+        // Gọi tất cả các API đồng thời
+        Promise.all([
+            axios.get(URL + '/count'),
+            axios.get(URL + '/count-project'),
+            axios.get(URL + '/count-supplier')
+        ]).then(function(responses) {
+            // Dữ liệu người dùng
+            let countUser = responses[0].data.count;
+            document.getElementById('count-user').innerHTML = countUser;
+
+            // Dữ liệu dự án
+            let countProject = responses[1].data.count;
+            document.getElementById('count-project').innerHTML = countProject;
+
+            // Dữ liệu nhà cung cấp
+            let countSupplier = responses[2].data.count;
+            document.getElementById('count-supplier').innerHTML = countSupplier;
+        }).catch(function(error) {
+            console.log(error); // Xử lý lỗi nếu có
+        });
+    }
+
+    // Gọi hàm loadAllData khi trang web đã sẵn sàng
+    document.addEventListener('DOMContentLoaded', function() {
+        loadAllData(); // Gọi một lần khi DOM đã tải xong
+    });
+</script>
 @endsection

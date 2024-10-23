@@ -22,19 +22,22 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        $validated = $request->validate([
-            'type' => 'required|in:"Xây dựng","Thiết kế"',
-            'description' => 'required|string|max:500',
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'type' => 'required|in:construction,design',
             'start_day' => 'required|date',
-            'end_day' => 'required|date',
-            'status' => 'required|in:active,completed',
+            'end_day' => 'required|date|after_or_equal:start_day',  // Ràng buộc ngày kết thúc sau hoặc bằng ngày bắt đầu
+            'budget' => 'required|numeric|min:0',
+            'status' => 'required|in:in-progress,completed,on-hold',
+            'description' => 'nullable|string',
         ]);
 
-        $project = Project::create($validated);
+        // Xử lý logic tạo dự án
+        Project::create($request->all());
 
-        return response()->json($project, 201);
+        return response()->json(['message' => 'Dự án đã được tạo thành công'], 201);
     }
+
 
     /**
      * Display the specified resource.
@@ -77,5 +80,11 @@ class ProjectController extends Controller
         $project->delete();
 
         return response()->json(null, 204);
+    }
+
+    public function countProject()
+    {
+        $count = Project::count();
+        return response()->json(['count' => $count], 200);
     }
 }

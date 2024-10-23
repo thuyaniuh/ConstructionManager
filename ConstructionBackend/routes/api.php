@@ -11,6 +11,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\ProjectAssignmentController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -27,13 +28,13 @@ use App\Http\Controllers\SupplierController;
 // });
 
 // Route::group(['prefix' => '/admin'], function () {
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/refresh', [AuthController::class, 'refresh']);
-    Route::get('/user-profile', [AuthController::class, 'userProfile']);
-    Route::post('/user-data', [AuthController::class, 'show']);
-    Route::post('/change-pass', [AuthController::class, 'changePassWord']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/logout', [AuthController::class, 'logout']);
+Route::post('/refresh', [AuthController::class, 'refresh']);
+Route::get('/user-profile', [AuthController::class, 'userProfile']);
+Route::post('/user-data', [AuthController::class, 'show']);
+Route::post('/change-pass', [AuthController::class, 'changePassWord']);
 // });
 
 
@@ -42,10 +43,12 @@ Route::post('/users', [UserController::class, 'store']);
 Route::get('/users/{id}', [UserController::class, 'show']);
 Route::put('/users/update/{id}', [UserController::class, 'update']);
 Route::delete('/users/{id}', [UserController::class, 'destroy']);
+Route::get('/count', [UserController::class, 'countUser']);
 
 // api quản lí dự án
+Route::get('/count-project', [ProjectController::class, 'countProject']);
 Route::get('/projects', [ProjectController::class, 'index']);
-Route::post('/projects/store', [ProjectController::class, 'store']);
+Route::post('/projects/store/', [ProjectController::class, 'store']);
 Route::get('/projects/{id}', [ProjectController::class, 'show']);
 Route::put('/projects/update/{id}', [ProjectController::class, 'update']);
 Route::delete('/projects/{id}', [ProjectController::class, 'destroy']);
@@ -68,7 +71,7 @@ Route::post('/suppliers/store', [SupplierController::class, 'store']);
 Route::get('/suppliers/{id}', [SupplierController::class, 'show']);
 Route::put('/suppliers/update/{id}', [SupplierController::class, 'update']);
 Route::delete('/suppliers/{id}', [SupplierController::class, 'destroy']);
-
+Route::get('count-supplier', [SupplierController::class, 'countSupplier']);
 // Routes cho Material
 Route::get('/materials', [MaterialController::class, 'index']);
 Route::post('/materials/store', [MaterialController::class, 'store']);
@@ -87,3 +90,15 @@ Route::post('/salary/paid/{user_id}', [SalaryController::class, 'markAsPaid']);
 
 // Xem chi tiết lương
 Route::get('/salary/{user_id}/{month}/{year}', [SalaryController::class, 'showSalary']);
+
+
+
+// Routes cho phân công người dùng vào dự án
+Route::get('/assignments/{project_id}', [ProjectAssignmentController::class, 'index']);
+Route::post('/assignments/assign/{project_id}', [ProjectAssignmentController::class, 'assignUsers']);
+Route::delete('/assignments/remove/{assignment_id}', [ProjectAssignmentController::class, 'removeUserFromProject']);
+
+// Routes cho chấm công
+Route::get('/entries/{project_id}', [EntryController::class, 'index']);
+Route::post('/entries/create/{project_id}', [EntryController::class, 'createEntries']);
+Route::post('/entries/{id}/checkout', [EntryController::class, 'checkout']);
