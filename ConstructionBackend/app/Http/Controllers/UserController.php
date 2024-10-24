@@ -4,17 +4,24 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['index']]);
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $users = User::all();
+        // $users = User::paginate(2);
+        $users = User::limit(10)->latest("user_id")->get();
         // Duyệt qua từng người dùng và thêm đường dẫn đầy đủ của avatar (nếu có)
         $users->map(function ($user) {
             if ($user->avatar) {
@@ -34,10 +41,10 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|string|email|max:255',
             'password' => 'required|string|min:8',
             'active_status' => 'required|in:active,locked',
-            'avatar' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048' // Kiểm tra file ảnh
+            // 'avatar' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048' // Kiểm tra file ảnh
         ]);
 
         // Xử lý upload ảnh
@@ -51,11 +58,14 @@ class UserController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'active_status' => $validated['active_status'],
+            'active_status' => $validated['active_status'] ?? "active",
             'avatar' => $avatarPath,
+            'birth' => Carbon::parse($request->dateOfBirth),
+            'phone' => $request->phone ?? "",
         ]);
 
-        return response()->json($user, 201);
+        // return true;/
+        return response()->json($user, 200);
     }
 
     /**

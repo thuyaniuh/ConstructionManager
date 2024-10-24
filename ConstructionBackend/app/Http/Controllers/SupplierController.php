@@ -7,9 +7,22 @@ use App\Models\Supplier;
 
 class SupplierController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $suppliers = Supplier::all();
+        $suppliers = Supplier::query();
+        $search = $request->search;
+        $phoneNumber = $request->phoneNumber;
+
+        if (!empty($search)) {
+            $suppliers->where('supplier_name', 'like', "%$search%");
+        }
+        if (!empty($phoneNumber)) {
+            $suppliers->where('phone', 'like', "%$phoneNumber%");
+        }
+
+
+        $suppliers = $suppliers->latest("supplier_id")->get();
+
         return response()->json($suppliers, 200);
     }
 

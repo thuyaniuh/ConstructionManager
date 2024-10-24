@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Carbon\Carbon;
 use Validator;
 
 class AuthController extends Controller
@@ -44,9 +45,9 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|between:2,100',
-            'email' => 'required|string|email|max:100|unique:users',
-            'password' => 'required|string|confirmed|min:6',
+            'name' => 'required|string',
+            'email' => 'required|string|email|max:100',
+            'password' => 'required|string|confirmed',
         ]);
 
         if ($validator->fails()) {
@@ -55,7 +56,7 @@ class AuthController extends Controller
 
         $user = User::create(array_merge(
             $validator->validated(),
-            ['password' => bcrypt($request->password)]
+            ['password' => bcrypt($request->password), 'birth' => Carbon::now(), 'phone' => ""]
         ));
 
         return response()->json([

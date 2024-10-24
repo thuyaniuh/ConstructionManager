@@ -6,9 +6,17 @@ use Illuminate\Http\Request;
 use App\Models\Material;
 class MaterialController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $materials = Material::all();
+        $materials = Material::query();
+
+        $search = $request->search;
+
+        if (!empty($search)) {
+            $materials->where('material_name', 'like', "%$search%");
+        }
+
+        $materials = $materials->latest("material_id")->get();
         return response()->json($materials, 200);
     }
 
