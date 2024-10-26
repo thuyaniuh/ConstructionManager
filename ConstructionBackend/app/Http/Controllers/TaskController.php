@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Carbon\Carbon;
 use App\Models\Task;
+use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($id)
     {
         //
-        $tasks = Task::all();
+        $tasks = Task::where("project_id", $id)->with(['project', 'user'])->get();
         return response()->json($tasks, 200);
     }
 
@@ -23,18 +24,23 @@ class TaskController extends Controller
     public function store(Request $request)
     {
         //
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'project_id' => 'required|exists:projects,id',
-            'user_id' => 'required|exists:users,id',
-            'start_day' => 'required|date',
-            'end_day' => 'required|date',
-            'status' => 'required|int',
-        ]);
+        // $validated = $request->validate([
+        //     'name' => 'required|string|max:255',
+        //     'project_id' => 'required|exists:projects,id',
+        //     'user_id' => 'required|exists:users,id',
+        //     'start_day' => 'required|date',
+        //     'end_day' => 'required|date',
+        //     'status' => 'required|int',
+        // ]);
 
-        $task = Task::create($validated);
+        if(Carbon::parse($request->start_day)->greaterThanOrEqualTo(Carbon::parse($request->end_day))) {
+            return response()->json("start date không được nhỏ hơn end date", 500);
+        }
+        // Thư viện carbon làm việc với ngày tháng nă, parse dùng để định dạng, hàm gte
+        // $task = Task::create($validated);
+        $task = Task::create($request->all());
 
-        return response()->json($task, 201);
+        return response()->json($task, 200);
     }
 
     /**

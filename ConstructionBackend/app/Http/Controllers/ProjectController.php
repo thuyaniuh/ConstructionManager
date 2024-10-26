@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Project;
+use Carbon\Carbon;
+use Exception;
 
 class ProjectController extends Controller
 {
@@ -13,7 +15,7 @@ class ProjectController extends Controller
     public function index()
     {
         //
-        $projects = Project::all();
+        $projects = Project::latest()->get();
         return response()->json($projects, 200);
     }
 
@@ -23,17 +25,27 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         //
-        $validated = $request->validate([
-            'type' => 'required|in:"Xây dựng","Thiết kế"',
-            'description' => 'required|string|max:500',
-            'start_day' => 'required|date',
-            'end_day' => 'required|date',
-            'status' => 'required|in:active,completed',
-        ]);
+        try {
+            $validated = $request->validate([
+                'budget' => 'required',
+                'name' => 'required',
+                'type' => 'required|in:"Xây dựng","Thiết kế"',
+                'description' => 'required|string|max:500',
+                'start_day' => 'required|date',
+                'end_day' => 'required|date',
+                'status' => 'required|in:active,completed',
+            ]);
 
-        $project = Project::create($validated);
+            if(Carbon::parse($request->start_day)->greaterThanOrEqualTo(Carbon::parse($request->end_day))) {
+                return response()->json("start date không được nhỏ hơn end date", 500);
+            }
 
-        return response()->json($project, 201);
+            $project = Project::create($validated);
+
+            return response()->json($project, 201);
+        } catch(Exception $e) {
+            return response()->json($e->getMessage(), 500);
+        }
     }
 
     /**

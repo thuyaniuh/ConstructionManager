@@ -10,6 +10,8 @@ class Project extends Model
     use HasFactory;
     protected $primaryKey = 'project_id';
     protected $fillable = [
+        'budget',
+        'name',
         'type',
         'description',
         'start_day',
